@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Page</title>
+    
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+    <!-- End Google Tag Manager -->
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .user-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+        .user-info h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .subscription-plans {
+            margin-bottom: 30px;
+        }
+        .plan {
+            border: 2px solid #dee2e6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .plan:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        .plan.selected {
+            border-color: #007bff;
+            background-color: #e7f3ff;
+        }
+        .plan h4 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .plan-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .subscribe-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .subscribe-btn:hover {
+            background-color: #1e7e34;
+        }
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div class="container">
+        <h1>Choose Your Subscription</h1>
+        
+        <div class="user-info">
+            <h3>Welcome!</h3>
+            <p id="userDetails">Loading user information...</p>
+        </div>
+        
+        <div class="subscription-plans">
+            <div class="plan" data-plan="basic">
+                <h4>Basic Plan</h4>
+                <div class="plan-price">$9.99/month</div>
+                <p>Essential features for getting started</p>
+            </div>
+            
+            <div class="plan" data-plan="premium">
+                <h4>Premium Plan</h4>
+                <div class="plan-price">$19.99/month</div>
+                <p>Advanced features for power users</p>
+            </div>
+            
+            <div class="plan" data-plan="enterprise">
+                <h4>Enterprise Plan</h4>
+                <div class="plan-price">$49.99/month</div>
+                <p>Full feature set for businesses</p>
+            </div>
+        </div>
+        
+        <button id="subscribeBtn" class="subscribe-btn">Start Subscription</button>
+        <button onclick="history.back()" class="back-btn">Back to Login</button>
+    </div>
+
+    <script>
+        // Initialize dataLayer
+        window.dataLayer = window.dataLayer || [];
+        
+        let userData = {};
+        let selectedPlan = null;
+        
+        // Load user data from previous page
+        window.addEventListener('load', function() {
+            try {
+                const storedData = sessionStorage.getItem('userData');
+                if (storedData) {
+                    userData = JSON.parse(storedData);
+                    document.getElementById('userDetails').innerHTML = 
+                        `<strong>${userData.name}</strong><br>
+                         Email: ${userData.email}<br>
+                         Phone: ${userData.phone}`;
+                } else {
+                    document.getElementById('userDetails').innerHTML = 
+                        '<span style="color: red;">No user data found. Please go back and login first.</span>';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                document.getElementById('userDetails').innerHTML = 
+                    '<span style="color: red;">Error loading user data.</span>';
+            }
+        });
+        
+        // Plan selection
+        document.querySelectorAll('.plan').forEach(plan => {
+            plan.addEventListener('click', function() {
+                // Remove previous selections
+                document.querySelectorAll('.plan').forEach(p => p.classList.remove('selected'));
+                
+                // Select current plan
+                this.classList.add('selected');
+                selectedPlan = this.getAttribute('data-plan');
+                
+                console.log('Plan selected:', selectedPlan);
+            });
+        });
+        
+        // Subscription button click
+        document.getElementById('subscribeBtn').addEventListener('click', function() {
+            if (!selectedPlan) {
+                alert('Please select a subscription plan first!');
+                return;
+            }
+            
+            if (Object.keys(userData).length === 0) {
+                alert('User data not available. Please go back and login first!');
+                return;
+            }
+            
+            // Fire subscription_started event with user data from previous page
+            window.dataLayer.push({
+                event: 'subscription_started',
+                user_id: userData.user_id,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                subscription_plan: selectedPlan,
+                subscription_price: getPlanPrice(selectedPlan)
+            });
+            
+            console.log('Subscription started event fired:', {
+                user_data: userData,
+                plan: selectedPlan
+            });
+            
+            alert(`Subscription started for ${selectedPlan} plan!`);
+        });
+        
+        function getPlanPrice(plan) {
+            const prices = {
+                'basic': '9.99',
+                'premium': '19.99',
+                'enterprise': '49.99'
+            };
+            return prices[plan] || '0';
+        }
+    </script>
+</body>
+</html>
